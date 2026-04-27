@@ -1,4 +1,4 @@
-const API_BASE = "https://api.github.com/repos/Aakashpuri786/class-11-notes/contents/";
+const API_BASE = "https://api.github.com/repos/aakashpuree/class-11-notes/contents/";
 let currentPath = "";
 let pathHistory = [];
 
