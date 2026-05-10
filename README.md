@@ -20,7 +20,7 @@ This platform provides well-organized notes and learning materials for four esse
 
 ## 🌐 Access the Website
 
-Visit the live platform: [https://aakashpuri786.github.io/Com.Eng-notes/](https://aakashpuri786.github.io/Com.Eng-notes/)
+Visit the live platform:https://com-eng-notes.vercel.app
 
 ---  
 
