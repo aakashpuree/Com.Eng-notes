@@ -1,27 +1,23 @@
-# 🖥️ Com.Eng Notes
+# Computer Engineering Notes
 
-**A comprehensive study resource for Class 11 Computer Engineering students**
+A Vue 3 + Vite + Tailwind CSS version of the notes explorer.
 
-This platform provides well-organized notes and learning materials for four essential subjects aligned with modern curriculum standards.
+## Setup
 
-## 📚 Subjects Covered
+```bash
+npm install
+npm run dev
+```
 
-- **COA** - Computer Organization & Architecture
-- **OS** - Operating Systems
-- **Java** - Java Programming
-- **WMA** - Web & Mobile Applications
+## Build
 
-## 🚀 Features
+```bash
+npm run build
+```
 
-- Clean, interactive interface for easy navigation
-- Curriculum-aligned content for all four subjects
-- Organized notes and reference materials
-- Accessible anytime, anywhere
+## What changed
 
-## 🌐 Access the Website
-
-Visit the live platform:https://com-eng-notes.vercel.app
-
----  
-
-*Master the fundamentals of computer engineering with structured, student-friendly content.*
+- Migrated the old static HTML, CSS, and JavaScript into a Vue single-file app.
+- Added Tailwind CSS v4 with utility classes used inline in the template.
+- Kept the repository explorer, preview modal, and download behavior.
+- Added a cleaner landing section, subject cards, FAQ, and responsive layout.

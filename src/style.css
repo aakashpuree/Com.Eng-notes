@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    background:
+      radial-gradient(circle at top left, rgba(46, 158, 150, 0.16), transparent 30%),
+      radial-gradient(circle at top right, rgba(74, 126, 181, 0.12), transparent 28%),
+      linear-gradient(180deg, #f8f0dd 0%, #f2e4c8 55%, #efe5d3 100%);
+    color: #2f261c;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  ::selection {
+    background: rgba(46, 158, 150, 0.22);
+    color: #2f261c;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f2e4c8;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2e9e96;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1a7a72;
+}
