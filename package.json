@@ -1,0 +1,25 @@
+{
+  "name": "com-eng-notes",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:watch": "nodemon --watch vite.config.js --watch index.html --watch package.json --ext js,json,html,css,vue --exec \"vite --host 127.0.0.1\"",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "dompurify": "^3.4.7",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
+    "marked": "^18.0.4",
+    "vue": "^3.5.35"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.0",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "nodemon": "^3.1.10",
+    "vite": "^8.0.16"
+  }
+}
