@@ -795,10 +795,10 @@ onBeforeUnmount(() => {
               </div>
             </div>
 
-            <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div class="relative w-full sm:w-auto">
+            <div class="mt-4 flex flex-row gap-3 sm:items-center sm:justify-between">
+              <div class="relative flex-1">
                 <button
-                  class="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#E8D5A3] bg-white px-5 py-3.5 font-semibold text-[#2F261C] transition hover:bg-[#F2E4C8] sm:w-auto sm:min-w-[148px]"
+                  class="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#E8D5A3] bg-white px-4 py-2.5 text-sm font-semibold text-[#2F261C] transition hover:bg-[#F2E4C8]"
                   @click.stop="toggleShareMenu"
                   :aria-expanded="shareMenuOpen"
                   aria-label="Share this preview"
@@ -829,7 +829,7 @@ onBeforeUnmount(() => {
               </div>
 
               <button
-                class="w-full rounded-full bg-[#2E9E96] px-5 py-3.5 font-semibold text-white shadow-lg shadow-[#2E9E96]/20 transition hover:bg-[#3BB5AB] sm:w-auto sm:min-w-[160px]"
+                class="flex-1 w-full rounded-full bg-[#2E9E96] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#2E9E96]/20 transition hover:bg-[#3BB5AB]"
                 @click="previewItem && downloadFile(previewItem)"
               >
                 Download
