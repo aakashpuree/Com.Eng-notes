@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { saveAs } from 'file-saver';
 import { marked } from 'marked';
@@ -16,6 +16,9 @@ const loading = ref(true);
 const apiError = ref('');
 const previewItem = ref(null);
 const shareMenuOpen = ref(false);
+const helpEmail = ref('');
+const helpMessage = ref('');
+const helpError = ref('');
 const previewState = ref({
   open: false,
   title: '',
@@ -25,9 +28,9 @@ const previewState = ref({
   text: '',
   loading: false,
 });
-const newsletterEmail = ref('');
-const newsletterError = ref('');
 const toasts = ref([]);
+
+const DEVELOPER_EMAIL = 'aakash.puri.online@gmail.com';
 
 let toastId = 0;
 let revealObserver = null;
@@ -381,16 +384,43 @@ function onCardKeydown(event, item) {
   }
 }
 
-function submitNewsletter() {
-  const email = newsletterEmail.value.trim();
+function buildHelpMailto(email, message) {
+  const subject = encodeURIComponent('Help request from ComEng notes');
+  const body = encodeURIComponent(
+    `Hello Aakash,\n\nMy email: ${email}\n\nMessage:\n${message}\n\nSent from the ComEng notes website.`,
+  );
+
+  return `mailto:${DEVELOPER_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+function submitHelpMessage() {
+  const email = helpEmail.value.trim();
+  const message = helpMessage.value.trim();
+
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    newsletterError.value = 'Please enter a valid email address.';
+    helpError.value = 'Please enter a valid email address.';
     return;
   }
 
-  newsletterError.value = '';
-  newsletterEmail.value = '';
-  showToast('Thanks for subscribing. You are on the list.', 'success');
+  if (!message) {
+    helpError.value = 'Please write a short message.';
+    return;
+  }
+
+  helpError.value = '';
+
+  const mailtoLink = buildHelpMailto(email, message);
+
+  if (typeof window !== 'undefined') {
+    const opened = window.open(mailtoLink, '_blank', 'noopener,noreferrer');
+    if (!opened) {
+      window.location.href = mailtoLink;
+    }
+  }
+
+  helpEmail.value = '';
+  helpMessage.value = '';
+  showToast('Your message is ready to send to the developer.', 'success');
 }
 
 function revealSections() {
@@ -453,7 +483,7 @@ onBeforeUnmount(() => {
         <nav class="hidden items-center gap-2 md:flex">
           <button class="rounded-full px-4 py-2 text-[#2E9E96] transition hover:bg-[#F2E4C8]" @click="openSection('home')">Home</button>
           <button class="rounded-full px-4 py-2 text-[#7B6C59] transition hover:bg-[#F2E4C8]" @click="openSection('browse')">Explorer</button>
-          <button class="rounded-full px-4 py-2 text-[#7B6C59] transition hover:bg-[#F2E4C8]" @click="openSection('subscribe')">Subscribe</button>
+          <button class="rounded-full px-4 py-2 text-[#7B6C59] transition hover:bg-[#F2E4C8]" @click="openSection('subscribe')">Help</button>
           <button
             class="ml-2 rounded-full bg-[#2E9E96] px-5 py-2.5 font-semibold text-white shadow-lg shadow-[#2E9E96]/25 transition hover:bg-[#1A7A72]"
             @click="openSection('browse')"
@@ -482,7 +512,7 @@ onBeforeUnmount(() => {
           <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-4 sm:px-6">
             <button class="rounded-2xl px-4 py-3 text-left font-medium text-[#2E9E96] hover:bg-[#F2E4C8]" @click="openSection('home')">Home</button>
             <button class="rounded-2xl px-4 py-3 text-left font-medium text-[#7B6C59] hover:bg-[#F2E4C8]" @click="openSection('browse')">Explorer</button>
-            <button class="rounded-2xl px-4 py-3 text-left font-medium text-[#7B6C59] hover:bg-[#F2E4C8]" @click="openSection('subscribe')">Subscribe</button>
+            <button class="rounded-2xl px-4 py-3 text-left font-medium text-[#7B6C59] hover:bg-[#F2E4C8]" @click="openSection('subscribe')">Help</button>
           </div>
         </div>
       </transition>
@@ -516,7 +546,7 @@ onBeforeUnmount(() => {
               <p class="mt-1 text-xs font-semibold uppercase tracking-[0.25em] text-[#7B6C59]">Folders</p>
             </div>
             <div class="rounded-[1.4rem] border border-white/70 bg-white/65 px-4 py-5 text-center shadow-[0_10px_30px_rgba(46,94,138,0.08)]">
-              <p class="font-display text-4xl font-semibold text-[#2E9E96] sm:text-5xl">{{ fileCount }}</p>
+              <p class="font-display text-4xl font-tosemibold text-[#2E9E96] sm:text-5xl">{{ fileCount }}</p>
               <p class="mt-1 text-xs font-semibold uppercase tracking-[0.25em] text-[#7B6C59]">Files</p>
             </div>
             <div class="rounded-[1.4rem] border border-white/70 bg-white/65 px-4 py-5 text-center shadow-[0_10px_30px_rgba(46,94,138,0.08)]">
@@ -548,7 +578,7 @@ onBeforeUnmount(() => {
               :disabled="pathHistory.length === 0"
               @click="goBack"
             >
-              <span>←</span>
+              <span>â†</span>
               Back
             </button>
             <button
@@ -666,48 +696,61 @@ onBeforeUnmount(() => {
           </p>
           <div class="mt-6 grid gap-3 sm:grid-cols-2">
             <div class="rounded-[1.4rem] border border-[#F0E0BA] bg-[#F8F0DD] px-4 py-4 text-sm leading-7 text-[#2F261C]">
-              <span class="mr-2 text-[#C9A84C]">●</span>Folders first, files after
+              <span class="mr-2 text-[#C9A84C]">•</span>Folders first, files after
             </div>
             <div class="rounded-[1.4rem] border border-[#F0E0BA] bg-[#F8F0DD] px-4 py-4 text-sm leading-7 text-[#2F261C]">
-              <span class="mr-2 text-[#C9A84C]">●</span>Open folder or download zip
+              <span class="mr-2 text-[#C9A84C]">•</span>Open folder or download zip
             </div>
             <div class="rounded-[1.4rem] border border-[#F0E0BA] bg-[#F8F0DD] px-4 py-4 text-sm leading-7 text-[#2F261C]">
-              <span class="mr-2 text-[#C9A84C]">●</span>Preview files before saving
+              <span class="mr-2 text-[#C9A84C]">•</span>Preview files before saving
             </div>
             <div class="rounded-[1.4rem] border border-[#F0E0BA] bg-[#F8F0DD] px-4 py-4 text-sm leading-7 text-[#2F261C]">
-              <span class="mr-2 text-[#C9A84C]">●</span>Breadcrumbs and back navigation
+              <span class="mr-2 text-[#C9A84C]">•</span>Breadcrumbs and back navigation
             </div>
           </div>
         </div>
 
         <div id="subscribe" class="rounded-[2rem] border border-[#E8D5A3] bg-[linear-gradient(180deg,#FFFDF8_0%,#F2E4C8_100%)] p-6 shadow-[0_16px_35px_rgba(46,94,138,0.08)] sm:p-8">
-          <p class="text-sm font-semibold uppercase tracking-[0.26em] text-[#2E9E96]">Newsletter</p>
-          <h2 class="font-display mt-2 text-3xl font-semibold text-[#2F261C]">Subscribe for new notes</h2>
+          <p class="text-sm font-semibold uppercase tracking-[0.26em] text-[#2E9E96]">Help</p>
+          <h2 class="font-display mt-2 text-3xl font-semibold text-[#2F261C]">Ask the developer for help</h2>
           <p class="mt-3 text-sm leading-7 text-[#7B6C59]">
-            Get updates when new files and folders are added to the collection.
+            Share your email and a short message. We'll open your mail app with a ready-to-send note to the developer.
           </p>
 
-          <form class="mt-6 space-y-3" @submit.prevent="submitNewsletter">
+          <form class="mt-6 space-y-3" @submit.prevent="submitHelpMessage">
             <label class="block text-sm font-medium text-[#2F261C]">
               Email address
               <input
-                v-model="newsletterEmail"
+                v-model="helpEmail"
                 type="email"
                 placeholder="you@example.com"
                 class="mt-2 w-full rounded-[1.2rem] border border-[#E8D5A3] bg-white px-4 py-3 text-[#2F261C] outline-none transition placeholder:text-[#A48E70] focus:border-[#2E9E96] focus:ring-4 focus:ring-[#2E9E96]/10"
               />
             </label>
 
-            <p v-if="newsletterError" class="text-sm font-medium text-[#A94442]">
-              {{ newsletterError }}
+            <label class="block text-sm font-medium text-[#2F261C]">
+              Message
+              <textarea
+                v-model="helpMessage"
+                rows="5"
+                placeholder="Write your question or the help you need..."
+                class="mt-2 w-full resize-none rounded-[1.2rem] border border-[#E8D5A3] bg-white px-4 py-3 text-[#2F261C] outline-none transition placeholder:text-[#A48E70] focus:border-[#2E9E96] focus:ring-4 focus:ring-[#2E9E96]/10"
+              ></textarea>
+            </label>
+
+            <p v-if="helpError" class="text-sm font-medium text-[#A94442]">
+              {{ helpError }}
             </p>
 
             <button
               type="submit"
               class="inline-flex w-full items-center justify-center rounded-full bg-[#2E9E96] px-5 py-3.5 font-semibold text-white shadow-lg shadow-[#2E9E96]/20 transition hover:bg-[#1A7A72]"
             >
-              Subscribe
+              Send message
             </button>
+            <p class="text-xs leading-6 text-[#7B6C59]">
+              This opens your default mail app with the developer address, your email, and your message filled in.
+            </p>
           </form>
         </div>
       </section>
@@ -716,7 +759,7 @@ onBeforeUnmount(() => {
     <footer class="border-t border-[#E8D5A3] bg-[#F2E4C8]/65">
       <div class="mx-auto flex w-full max-w-7xl flex-col gap-2 px-4 py-6 text-center text-sm text-[#7B6C59] sm:px-6 lg:px-8 md:flex-row md:items-center md:justify-between md:text-left">
         <p>Designed with a warm editorial palette and student-first interactions.</p>
-        <p>Built with Vue, Vite, and Tailwind CSS.</p>
+        <p>Built by Aakash Puri.</p>
       </div>
     </footer>
 
@@ -852,3 +895,4 @@ onBeforeUnmount(() => {
     </transition>
   </div>
 </template>
+
