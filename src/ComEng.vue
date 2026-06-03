@@ -1,11 +1,11 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { saveAs } from 'file-saver';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
 const API_BASE = 'https://api.github.com/repos/aakashpuree/class-11-notes/contents/';
-const ROOT_PATH = 'Class 11';
+const ROOT_PATH = '';
 
 const navOpen = ref(false);
 const search = ref('');
@@ -100,12 +100,16 @@ function getLocationUrl(path = currentPath.value, previewPath = '') {
   if (typeof window === 'undefined') return '';
 
   const url = new URL(window.location.href);
-  url.searchParams.set('path', path || ROOT_PATH);
-
   if (previewPath) {
+    url.searchParams.set('path', path || ROOT_PATH);
     url.searchParams.set('preview', previewPath);
   } else {
     url.searchParams.delete('preview');
+    if (path && path !== ROOT_PATH) {
+      url.searchParams.set('path', path);
+    } else {
+      url.searchParams.delete('path');
+    }
   }
 
   return url.toString();
@@ -133,7 +137,7 @@ function openSection(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-async function loadPath(path, { pushHistory = false } = {}) {
+async function loadPath(path, { pushHistory = false, syncUrl = false } = {}) {
   loading.value = true;
   apiError.value = '';
 
@@ -141,7 +145,10 @@ async function loadPath(path, { pushHistory = false } = {}) {
     const data = await fetchRepoContents(path);
     items.value = data;
     currentPath.value = path;
-    syncLocation(currentPath.value);
+
+    if (syncUrl) {
+      syncLocation(currentPath.value);
+    }
 
     if (pushHistory) {
       pathHistory.value.push(pathHistory.value.length ? currentPath.value : ROOT_PATH);
@@ -156,24 +163,24 @@ async function loadPath(path, { pushHistory = false } = {}) {
 
 function openFolder(item) {
   pathHistory.value.push(currentPath.value);
-  loadPath(item.path);
+  loadPath(item.path, { syncUrl: true });
 }
 
 function openRoot() {
   pathHistory.value = [];
-  loadPath(ROOT_PATH);
+  loadPath(ROOT_PATH, { syncUrl: true });
 }
 
 function goBack() {
   if (!pathHistory.value.length) return;
   const previous = pathHistory.value.pop();
-  loadPath(previous ?? ROOT_PATH);
+  loadPath(previous ?? ROOT_PATH, { syncUrl: true });
 }
 
 function jumpToBreadcrumb(path) {
   const target = path || ROOT_PATH;
   pathHistory.value = [];
-  loadPath(target);
+  loadPath(target, { syncUrl: true });
 }
 
 function nameToExt(name) {
@@ -406,13 +413,17 @@ function revealSections() {
 onMounted(async () => {
   revealSections();
   const initial = readLocationState();
-  await loadPath(initial.path || ROOT_PATH);
-
   if (initial.preview) {
+    await loadPath(initial.path || ROOT_PATH);
     const match = items.value.find((item) => item.path === initial.preview);
     if (match) {
       await previewFile(match);
     }
+  } else {
+    await loadPath(ROOT_PATH);
+    syncLocation(ROOT_PATH);
+    await nextTick();
+    document.getElementById('browse')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 });
 
